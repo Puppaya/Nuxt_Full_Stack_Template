@@ -1,0 +1,60 @@
+---
+description: Prevent AI slop UI/UX — workflow-first, reuse Nuxt UI patterns
+globs: app/**/*.{vue,css}
+alwaysApply: false
+---
+
+# Anti AI Slop UI/UX
+
+## Before coding UI
+
+1. Define user goal, primary action, and required data — do not generate layout first
+2. Read similar existing pages/components and match their pattern
+3. Reference patterns: `app/pages/users.vue`, `app/pages/customers.vue`, `app/components/ConfirmModal.vue`
+
+## Reuse (required)
+
+- Nuxt UI: `UButton`, `UTable`, `UModal`, `UForm`, `UFormField`, `UInput`, `USelect`, `UBadge`, `UPagination`
+- Shared components: `ConfirmModal`, `AppLoading`, existing `*FormModal.vue`
+- Theme tokens from `app/app.config.ts` (primary: indigo, neutral: slate)
+- Do not add UI libraries or one-off styled components without approval
+
+## Forbidden slop patterns
+
+- Decorative gradients, glassmorphism, heavy shadows, hero sections in admin pages
+- KPI/chart cards without a clear business decision
+- Multiple competing primary buttons on one screen
+- Card nesting without information purpose
+- Vague copy: "Welcome", "Manage efficiently", buttons labeled "Submit" / "Action" / "Click here"
+- Icon-only critical actions without accessible label
+- Arbitrary spacing (13px, 17px, 23px) — use 4/8/12/16/24/32 scale
+
+## Required UX states
+
+Every screen must handle: loading, empty, error, success feedback.
+Destructive actions must use `ConfirmModal` with clear consequence text.
+
+## Forms & data
+
+- `UFormField name` must match Zod schema key
+- `USelect`: use `placeholder`, never `value: ''` in items
+- `$fetch` body: `{ ...state }` not reactive proxy
+- Numeric IDs: use `??` not `||`
+
+## Page structure (CRUD list pages)
+
+```
+Page header (title + primary action)
+Toolbar (search, filters)
+Table (priority columns only)
+Pagination
+Modal/Drawer for create-edit
+```
+
+## Pre-merge checklist
+
+- [ ] User knows what to do without explanation
+- [ ] One clear primary action
+- [ ] Consistent with existing pages
+- [ ] Mobile/tablet usable
+- [ ] No decorative elements that do not support workflow

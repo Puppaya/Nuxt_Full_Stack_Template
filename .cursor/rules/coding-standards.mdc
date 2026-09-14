@@ -1,0 +1,76 @@
+---
+description: Project coding standards — layered architecture, API, frontend, tests
+alwaysApply: true
+---
+
+# Coding Standards
+
+## Architecture
+
+Layered flow only: **API → Service → Repository → Database**
+
+| Layer | Location | Responsibility |
+|-------|----------|----------------|
+| API | `server/api/` | Auth, validation, HTTP, response format |
+| Service | `server/services/` | Business logic, hashing, rules |
+| Repository | `server/utils/repositories.ts` + `BaseRepository` | Data access |
+| Frontend | `app/pages/`, `app/components/` | UI, forms, API calls |
+
+- No business logic in API handlers beyond orchestration
+- No direct DB/ORM calls outside repositories
+- Export service as class + singleton: `export const userService = new UserService()`
+
+## API
+
+```typescript
+// Route params — validate NaN
+const id = Number(getRouterParam(event, 'id'))
+if (!id || isNaN(id)) return sendApiError('Invalid ID', 400)
+
+// Body/query — use validateRequest + Zod schema from server/utils/validation.ts
+const data = await validateRequest(event, UserUpdateSchema)
+
+// Auth — use requireAdmin or checkRole from server/utils/rbac.ts
+await requireAdmin(event)
+
+// Response — always use sendSuccess / sendApiError
+return sendSuccess(result, 'Optional message')
+```
+
+- File naming: `index.get.ts`, `index.post.ts`, `[id].patch.ts`, `[id].delete.ts`
+- Zod IDs/numeric inputs: `z.coerce.number().min(1)` not `z.number()`
+- Password from client: `decryptPassword()` in API before service
+
+## Service
+
+- One service class per domain (`UserService`, `CustomerService`)
+- `update`/`delete`: `findById` first → throw 404 if missing or soft-deleted
+- Soft-delete: include `updatedBy: resolveAuditActor(null, ctx)` in update payload
+- `authenticate()`: check `deletedAt` before password
+
+## Frontend
+
+- Data fetching: `useApi` (lists) or `useApiAction` (mutations)
+- Forms: `UForm` + Zod; `UFormField name` must match schema key
+- `$fetch` body: `{ ...state }` — never pass reactive proxy directly
+- Numeric IDs: use `??` not `||`
+- `USelect`: use `placeholder`, never `value: ''` in items
+- Passwords: `encryptPassword()` before send; omit empty password on edit
+- Page RBAC: `definePageMeta({ roles: [...] })`
+
+## Testing
+
+- Location: `tests/unit/` mirroring source structure
+- Mock repositories/crypto — no real DB or HTTP
+- Naming: `should [behavior] when [condition]`
+- Service specs with 404 paths: stub global `createError` from `h3` in `beforeAll`
+- Every `update()`/`delete()` service method: test 404 for missing + soft-deleted records
+- Every `delete()`: assert `updatedBy` in update call when soft-delete
+
+## General
+
+- TypeScript strict; avoid `any` unless matching existing pattern
+- Reuse existing utils before creating new ones
+- Do not commit secrets (`.env`, keys)
+- Match existing file style (4-space indent in server, existing Vue formatting)
+- Add/update tests when business logic behavior changes
