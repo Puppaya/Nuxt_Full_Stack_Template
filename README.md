@@ -12,7 +12,7 @@
 - 🧑‍🤝‍🧑 **จัดการลูกค้า (Customers)** — CRUD ครบครัน รูปแบบเดียวกับโมดูล Users
 - 🏗️ **โครงสร้างแบบ Layered** — API → Service → Repository → Database
 - 🧪 **ระบบ Unit Testing** — Vitest พร้อม Mocking แยก Folder `tests/` เรียบร้อย
-- 🎨 **ธีมพรีเมียม** — โทนสี Indigo/Slate พร้อม Glassmorphism และฟอนต์ Outfit + Public Sans
+- 🎨 **ธีมสำหรับงาน Admin** — โทนสี Indigo/Slate เน้นความชัดเจนและใช้งานซ้ำๆ ได้เร็ว ฟอนต์ Outfit + Public Sans
 - 🤝 **รองรับภาษาลาว** — ฟอนต์ Noto Sans Lao สำหรับ UI และข้อความในระบบ
 
 ---
@@ -60,6 +60,20 @@ dashboard/
 ├── prisma.config.ts
 └── .env
 ```
+
+---
+
+## 📏 มาตรฐานทีม (Standards)
+
+ทุกคนและ **AI ทุกตัว** (Antigravity, Claude Code, Cursor, Copilot, Codex ฯลฯ) ต้องทำตามมาตรฐานเดียวกัน:
+
+- [`AGENTS.md`](AGENTS.md) — จุดเริ่มต้นที่ AI อ่านก่อนเขียนโค้ด
+- [`docs/standards/coding-standards.md`](docs/standards/coding-standards.md) — สถาปัตยกรรม, API, Service, Frontend, Testing
+- [`docs/standards/ui-standards.md`](docs/standards/ui-standards.md) — มาตรฐาน UI/UX
+
+`CLAUDE.md`, `GEMINI.md`, `.cursor/`, `.github/copilot-instructions.md` เป็นเพียงตัวชี้มาที่ไฟล์ข้างบน — **แก้มาตรฐานที่ `docs/standards/` เท่านั้น**
+
+ก่อนส่งงานต้องผ่าน: `bun run lint && bun run typecheck && bun run test`
 
 ---
 
